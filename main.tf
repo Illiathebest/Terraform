@@ -4,8 +4,6 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_iam_account_alias" "current" {}
-
 resource "aws_security_group" "web_sg" {
   name        = "web_sg"
   description = "Security group for web server instance"
@@ -52,7 +50,7 @@ resource "aws_instance" "web" {
       "sudo apt-get update -y",
       "sudo apt-get install -y docker.io docker-compose",
       "sudo systemctl start docker",
-      "sudo systemctl enable docker"
+      "sudo systemctl enable docker",
       "echo ${local.secret_data.password} | sudo tee /tmp/my_test_secret_password.txt"
     ]
     connection {
