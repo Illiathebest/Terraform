@@ -1,6 +1,10 @@
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
+
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_account_alias" "current" {}
 
 resource "aws_security_group" "web_sg" {
   name        = "web_sg"
@@ -10,7 +14,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["176.102.39.212/32"] 
+    cidr_blocks = [var.allowed_ssh_ip]
   }
 
   ingress {
@@ -19,6 +23,7 @@ resource "aws_security_group" "web_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   ingress {
     from_port   = 443
     to_port     = 443
@@ -35,10 +40,9 @@ resource "aws_security_group" "web_sg" {
 }
 
 resource "aws_instance" "web" {
-  ami           = "ami-04b4f1a9cf54c11d0" 
-  instance_type = "t2.micro"
-  key_name      = "devops"
-
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
   associate_public_ip_address = true
 
   vpc_security_group_ids = [aws_security_group.web_sg.id]
@@ -49,16 +53,13 @@ resource "aws_instance" "web" {
       "sudo apt-get install -y docker.io docker-compose",
       "sudo systemctl start docker",
       "sudo systemctl enable docker"
+      "echo ${local.secret_data.password} | sudo tee /tmp/my_test_secret_password.txt"
     ]
     connection {
       type        = "ssh"
-      user        = "ubuntu" 
-      private_key = file("C:/Users/kukha/Terraform/devops.pem")
+      user        = var.ssh_user
+      private_key = file(var.private_key_path)
       host        = self.public_ip
     }
   }
-}
-
-output "instance_public_ip" {
-  value = aws_instance.web.public_ip
 }
