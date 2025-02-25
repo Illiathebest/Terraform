@@ -4,7 +4,7 @@ resource "random_password" "secret_password" {
 }
 
 resource "aws_secretsmanager_secret" "my_test_secret" {
-  name        = "my-test-secret"
+  name        = "my-test-secret-unique"
 }
 
 resource "aws_secretsmanager_secret_version" "my_test_secret_version" {
