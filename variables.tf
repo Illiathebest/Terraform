@@ -33,7 +33,4 @@ variable "private_key_path" {
   default     = "C:/Users/kukha/Terraform/devops.pem"
 }
 
-variable "secret_name" {
-  type        = string
-  default     = "my-test-secret"
-}
+

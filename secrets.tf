@@ -1,11 +1,15 @@
-data "aws_secretsmanager_secret" "existing_secret" {
-  name = var.secret_name
+resource "random_password" "secret_password" {
+  length  = 16
+  special = true
 }
 
-data "aws_secretsmanager_secret_version" "existing_secret_version" {
-  secret_id = data.aws_secretsmanager_secret.existing_secret.id
+resource "aws_secretsmanager_secret" "my_test_secret" {
+  name        = "my-test-secret"
 }
 
-locals {
-  secret_data = jsondecode(data.aws_secretsmanager_secret_version.existing_secret_version.secret_string)
+resource "aws_secretsmanager_secret_version" "my_test_secret_version" {
+  secret_id     = aws_secretsmanager_secret.my_test_secret.id
+  secret_string = jsonencode({
+    password = random_password.secret_password.result
+  })
 }

@@ -51,7 +51,6 @@ resource "aws_instance" "web" {
       "sudo apt-get install -y docker.io docker-compose",
       "sudo systemctl start docker",
       "sudo systemctl enable docker",
-      "echo ${local.secret_data.password} | sudo tee /tmp/my_test_secret_password.txt"
     ]
     connection {
       type        = "ssh"
